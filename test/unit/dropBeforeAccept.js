@@ -1,9 +1,13 @@
 #!/usr/bin/env node
 
-var test = require('tape');
+import sharedtestserver_testserverjs from "../shared/test-server";
+import libWebSocketClient_WebSocketClient from "../../lib/WebSocketClient";
+import ext_tape from "tape";
 
-var WebSocketClient = require('../../lib/WebSocketClient');
-var server = require('../shared/test-server');
+var test = ext_tape;
+
+var WebSocketClient = libWebSocketClient_WebSocketClient;
+var server = sharedtestserver_testserverjs;
 var stopServer = server.stopServer;
 
 test('Drop TCP Connection Before server accepts the request', function(t) {

@@ -1,5 +1,7 @@
-var http = require('http');
-var WebSocketServer = require('../../lib/WebSocketServer');
+import libWebSocketServer_WebSocketServer from "../../lib/WebSocketServer";
+import ext_http from "http";
+var http = ext_http;
+var WebSocketServer = libWebSocketServer_WebSocketServer;
 
 var server;
 var wsServer;
@@ -39,7 +41,9 @@ function stopServer() {
   }
 }
 
-module.exports = {
+mod_testserverjs = {
   prepare: prepare,
   stopServer: stopServer
 };
+var mod_testserverjs;
+export default mod_testserverjs;

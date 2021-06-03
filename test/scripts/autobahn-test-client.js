@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+import ext_querystring from "querystring";
+import libwebsocket_websocketjs from "../../lib/websocket";
+import libWebSocketClient_WebSocketClient from "../../lib/WebSocketClient";
 /************************************************************************
  *  Copyright 2010-2015 Brian McKelvey.
  *  
@@ -15,9 +18,9 @@
  *  limitations under the License.
  ***********************************************************************/
 
-var WebSocketClient = require('../../lib/WebSocketClient');
-var wsVersion = require('../../lib/websocket').version;
-var querystring = require('querystring');
+var WebSocketClient = libWebSocketClient_WebSocketClient;
+var wsVersion = libwebsocket_websocketjs.version;
+var querystring = ext_querystring;
 
 var args = { /* defaults */
     secure: false,

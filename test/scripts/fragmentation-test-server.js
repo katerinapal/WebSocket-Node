@@ -1,4 +1,9 @@
 #!/usr/bin/env node
+import ext_fs from "fs";
+import ext_http from "http";
+import * as libutils_utilsjs from "../../lib/utils";
+import libWebSocketRouter_WebSocketRouter from "../../lib/WebSocketRouter";
+import libWebSocketServer_WebSocketServer from "../../lib/WebSocketServer";
 /************************************************************************
  *  Copyright 2010-2015 Brian McKelvey.
  *  
@@ -16,11 +21,11 @@
  ***********************************************************************/
 
 
-var WebSocketServer = require('../../lib/WebSocketServer');
-var WebSocketRouter = require('../../lib/WebSocketRouter');
-var bufferAllocUnsafe = require('../../lib/utils').bufferAllocUnsafe;
-var http = require('http');
-var fs = require('fs');
+var WebSocketServer = libWebSocketServer_WebSocketServer;
+var WebSocketRouter = libWebSocketRouter_WebSocketRouter;
+var bufferAllocUnsafe = libutils_utilsjs.bufferAllocUnsafe;
+var http = ext_http;
+var fs = ext_fs;
 
 console.log('WebSocket-Node: Test server to spit out fragmented messages.');
 
