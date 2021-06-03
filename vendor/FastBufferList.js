@@ -1,15 +1,19 @@
+var mod_BufferList = BufferList;
+import ext_util from "util";
+import * as libutils_utilsjs from "../lib/utils";
+import ext_events from "events";
+import ext_buffer from "buffer";
 // This file was copied from https://github.com/substack/node-bufferlist
 // and modified to be able to copy bytes from the bufferlist directly into
 // a pre-existing fixed-size buffer without an additional memory allocation.
 
 // bufferlist.js
 // Treat a linked list of buffers as a single variable-size buffer.
-var Buffer = require('buffer').Buffer;
-var EventEmitter = require('events').EventEmitter;
-var bufferAllocUnsafe = require('../lib/utils').bufferAllocUnsafe;
+var Buffer = ext_buffer.Buffer;
+var EventEmitter = ext_events.EventEmitter;
+var bufferAllocUnsafe = libutils_utilsjs.bufferAllocUnsafe;
 
-module.exports = BufferList;
-module.exports.BufferList = BufferList; // backwards compatibility
+mod_BufferList.BufferList = BufferList; // backwards compatibility
 
 function BufferList(opts) {
     if (!(this instanceof BufferList)) return new BufferList(opts);
@@ -188,4 +192,5 @@ function BufferList(opts) {
         return self.take('binary');
     };
 }
-require('util').inherits(BufferList, EventEmitter);
+ext_util.inherits(BufferList, EventEmitter);
+export default mod_BufferList;

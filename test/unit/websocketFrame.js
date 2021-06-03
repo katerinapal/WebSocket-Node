@@ -1,9 +1,14 @@
 #!/usr/bin/env node
 
-var test = require('tape');
-var bufferEqual = require('buffer-equal');
-var WebSocketFrame = require('../../lib/WebSocketFrame');
-var utils = require('../../lib/utils');
+import * as libutils_utilsjs from "../../lib/utils";
+import libWebSocketFrame_WebSocketFrame from "../../lib/WebSocketFrame";
+import ext_bufferequal from "buffer-equal";
+import ext_tape from "tape";
+
+var test = ext_tape;
+var bufferEqual = ext_bufferequal;
+var WebSocketFrame = libWebSocketFrame_WebSocketFrame;
+var utils = libutils_utilsjs;
 var bufferAllocUnsafe = utils.bufferAllocUnsafe;
 var bufferFromString = utils.bufferFromString;
 
