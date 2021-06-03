@@ -38,7 +38,9 @@ if (!args.host || !args.port) {
     console.log('WebSocket-Node: Test client for Andy Green\'s libwebsockets-test-server');
     console.log('Usage: ./libwebsockets-test-client.js --host=127.0.0.1 --port=8080 [--version=8|13] [--secure]');
     console.log('');
-    return;
+
+    // return;
+    process.exit();
 }
 
 var mirrorClient = new WebSocketClient({

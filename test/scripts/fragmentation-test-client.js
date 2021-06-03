@@ -41,7 +41,9 @@ args.protocol = args.secure ? 'wss:' : 'ws:';
 if (args.help) {
     console.log('Usage: ./fragmentation-test-client.js [--host=127.0.0.1] [--port=8080] [--no-defragment] [--binary]');
     console.log('');
-    return;
+
+    // return;
+    process.exit();
 }
 else {
     console.log('Use --help for usage information.');

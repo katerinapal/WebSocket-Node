@@ -41,7 +41,9 @@ if (!args.port) {
     console.log('libwebsockets-test-server protocols.');
     console.log('Usage: ./libwebsockets-test-server.js --port=8080 [--secure]');
     console.log('');
-    return;
+
+    // return;
+    process.exit();
 }
 
 if (args.secure) {
@@ -49,7 +51,9 @@ if (args.secure) {
     console.log('libwebsockets-test-server protocols.');
     console.log('ERROR: TLS is not yet supported.');
     console.log('');
-    return;
+
+    // return;
+    process.exit();
 }
 
 var server = http.createServer(function(request, response) {

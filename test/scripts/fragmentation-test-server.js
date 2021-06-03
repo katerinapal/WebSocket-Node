@@ -44,7 +44,9 @@ args.protocol = 'ws:';
 if (args.help) {
     console.log('Usage: ./fragmentation-test-server.js [--port=8080] [--fragment=n] [--no-fragmentation]');
     console.log('');
-    return;
+    
+    // return;
+    process.exit();
 }
 else {
     console.log('Use --help for usage information.');
