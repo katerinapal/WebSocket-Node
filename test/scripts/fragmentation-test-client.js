@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import libWebSocketClient_WebSocketClient from "../../lib/WebSocketClient";
 /************************************************************************
  *  Copyright 2010-2015 Brian McKelvey.
  *  
@@ -15,7 +16,7 @@
  *  limitations under the License.
  ***********************************************************************/
 
-var WebSocketClient = require('../../lib/WebSocketClient');
+var WebSocketClient = libWebSocketClient_WebSocketClient;
 
 console.log('WebSocket-Node: Test client for parsing fragmented messages.');
 

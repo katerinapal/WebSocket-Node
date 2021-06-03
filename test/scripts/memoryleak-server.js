@@ -1,10 +1,13 @@
+import ext_https from "https";
+import libwebsocket_websocketjs from "../../lib/websocket";
+import ext_fs from "fs";
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 // var heapdump = require('heapdump');
 // var memwatch = require('memwatch');
-var fs = require('fs');
-var WebSocketServer = require('../../lib/websocket').server;
-var https = require('https');
+var fs = ext_fs;
+var WebSocketServer = libwebsocket_websocketjs.server;
+var https = ext_https;
 
 var activeCount = 0;
 

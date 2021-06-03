@@ -1,4 +1,6 @@
-module.exports = startEchoServer;
+var mod_startEchoServer = startEchoServer;
+import ext_child_process from "child_process";
+import ext_path from "path";
 
 function startEchoServer(outputStream, callback) {
   if ('function' === typeof outputStream) {
@@ -9,11 +11,11 @@ function startEchoServer(outputStream, callback) {
     callback = function(){};
   }
   
-  var path = require('path').join(__dirname + '/../scripts/echo-server.js');
+  var path = ext_path.join(__dirname + '/../scripts/echo-server.js');
   
   console.log(path);
     
-  var echoServer = require('child_process').spawn('node', [ path ]);
+  var echoServer = ext_child_process.spawn('node', [ path ]);
   
   var state = 'starting';
   
@@ -54,3 +56,4 @@ function startEchoServer(outputStream, callback) {
     }
   });
 }
+export default mod_startEchoServer;

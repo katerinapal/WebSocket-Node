@@ -1,7 +1,10 @@
-var test = require('tape');
+import sharedtestserver_testserverjs from "../shared/test-server";
+import libWebSocketClient_WebSocketClient from "../../lib/WebSocketClient";
+import ext_tape from "tape";
+var test = ext_tape;
 
-var WebSocketClient = require('../../lib/WebSocketClient');
-var server = require('../shared/test-server');
+var WebSocketClient = libWebSocketClient_WebSocketClient;
+var server = sharedtestserver_testserverjs;
 var stopServer = server.stopServer;
 
 test('Request can only be rejected or accepted once.', function(t) {

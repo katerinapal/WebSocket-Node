@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import ext_http from "http";
+import libWebSocketServer_WebSocketServer from "../../lib/WebSocketServer";
 /************************************************************************
  *  Copyright 2010-2015 Brian McKelvey.
  *
@@ -15,8 +17,8 @@
  *  limitations under the License.
  ***********************************************************************/
 
-var WebSocketServer = require('../../lib/WebSocketServer');
-var http = require('http');
+var WebSocketServer = libWebSocketServer_WebSocketServer;
+var http = ext_http;
 
 var args = { /* defaults */
     port: '8080',
