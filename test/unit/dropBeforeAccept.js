@@ -1,67 +1,74 @@
 #!/usr/bin/env node
+"use strict";
 
-import sharedtestserver_testserverjs from "../shared/test-server";
-import libWebSocketClient_WebSocketClient from "../../lib/WebSocketClient";
-import ext_tape from "tape";
+var _testServer = require("../shared/test-server");
 
-var test = ext_tape;
+var _testServer2 = _interopRequireDefault(_testServer);
 
-var WebSocketClient = libWebSocketClient_WebSocketClient;
-var server = sharedtestserver_testserverjs;
+var _WebSocketClient = require("../../lib/WebSocketClient");
+
+var _WebSocketClient2 = _interopRequireDefault(_WebSocketClient);
+
+var _tape = require("tape");
+
+var _tape2 = _interopRequireDefault(_tape);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var test = _tape2.default;
+
+var WebSocketClient = _WebSocketClient2.default;
+var server = _testServer2.default;
 var stopServer = server.stopServer;
 
-test('Drop TCP Connection Before server accepts the request', function(t) {
+test('Drop TCP Connection Before server accepts the request', function (t) {
   t.plan(5);
-  
-  server.prepare(function(err, wsServer) {
+
+  server.prepare(function (err, wsServer) {
     if (err) {
       t.fail('Unable to start test server');
       return t.end();
     }
-    
-    wsServer.on('connect', function(connection) {
+
+    wsServer.on('connect', function (connection) {
       t.pass('Server should emit connect event');
     });
-    
-    wsServer.on('request', function(request) {
+
+    wsServer.on('request', function (request) {
       t.pass('Request received');
 
       // Wait 500 ms before accepting connection
-      setTimeout(function() {
+      setTimeout(function () {
         var connection = request.accept(request.requestedProtocols[0], request.origin);
-        
-        connection.on('close', function(reasonCode, description) {
+
+        connection.on('close', function (reasonCode, description) {
           t.pass('Connection should emit close event');
           t.equal(reasonCode, 1006, 'Close reason code should be 1006');
-          t.equal(description,
-            'TCP connection lost before handshake completed.',
-            'Description should be correct');
+          t.equal(description, 'TCP connection lost before handshake completed.', 'Description should be correct');
           t.end();
           stopServer();
         });
-        
-        connection.on('error', function(error) {
+
+        connection.on('error', function (error) {
           t.fail('No error events should be received on the connection');
           stopServer();
         });
-        
       }, 500);
     });
-    
+
     var client = new WebSocketClient();
-    client.on('connect', function(connection) {
+    client.on('connect', function (connection) {
       t.fail('Client should never connect.');
       connection.drop();
       stopServer();
       t.end();
     });
-    
+
     client.connect('ws://localhost:64321/', ['test']);
-    
-    setTimeout(function() {
+
+    setTimeout(function () {
       // Bail on the connection before we hear back from the server.
       client.abort();
     }, 250);
-    
   });
 });

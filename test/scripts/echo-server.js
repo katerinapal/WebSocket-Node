@@ -1,6 +1,16 @@
 #!/usr/bin/env node
-import ext_http from "http";
-import libWebSocketServer_WebSocketServer from "../../lib/WebSocketServer";
+"use strict";
+
+var _http = require("http");
+
+var _http2 = _interopRequireDefault(_http);
+
+var _WebSocketServer = require("../../lib/WebSocketServer");
+
+var _WebSocketServer2 = _interopRequireDefault(_WebSocketServer);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 /************************************************************************
  *  Copyright 2010-2015 Brian McKelvey.
  *
@@ -17,8 +27,8 @@ import libWebSocketServer_WebSocketServer from "../../lib/WebSocketServer";
  *  limitations under the License.
  ***********************************************************************/
 
-var WebSocketServer = libWebSocketServer_WebSocketServer;
-var http = ext_http;
+var WebSocketServer = _WebSocketServer2.default;
+var http = _http2.default;
 
 var args = { /* defaults */
     port: '8080',
@@ -27,7 +37,7 @@ var args = { /* defaults */
 
 /* Parse command line options */
 var pattern = /^--(.*?)(?:=(.*))?$/;
-process.argv.forEach(function(value) {
+process.argv.forEach(function (value) {
     var match = pattern.exec(value);
     if (match) {
         args[match[1]] = match[2] ? match[2] : true;
@@ -40,49 +50,57 @@ var debug = args.debug;
 console.log('WebSocket-Node: echo-server');
 console.log('Usage: ./echo-server.js [--port=8080] [--debug]');
 
-var server = http.createServer(function(request, response) {
-    if (debug) { console.log((new Date()) + ' Received request for ' + request.url); }
+var server = http.createServer(function (request, response) {
+    if (debug) {
+        console.log(new Date() + ' Received request for ' + request.url);
+    }
     response.writeHead(404);
     response.end();
 });
-server.listen(port, function() {
-    console.log((new Date()) + ' Server is listening on port ' + port);
+server.listen(port, function () {
+    console.log(new Date() + ' Server is listening on port ' + port);
 });
 
 var wsServer = new WebSocketServer({
     httpServer: server,
     autoAcceptConnections: true,
-    maxReceivedFrameSize: 64*1024*1024,   // 64MiB
-    maxReceivedMessageSize: 64*1024*1024, // 64MiB
+    maxReceivedFrameSize: 64 * 1024 * 1024, // 64MiB
+    maxReceivedMessageSize: 64 * 1024 * 1024, // 64MiB
     fragmentOutgoingMessages: false,
     keepalive: false,
     disableNagleAlgorithm: false
 });
 
-wsServer.on('connect', function(connection) {
-    if (debug) { console.log((new Date()) + ' Connection accepted' + 
-                            ' - Protocol Version ' + connection.webSocketVersion); }
+wsServer.on('connect', function (connection) {
+    if (debug) {
+        console.log(new Date() + ' Connection accepted' + ' - Protocol Version ' + connection.webSocketVersion);
+    }
     function sendCallback(err) {
         if (err) {
-          console.error('send() error: ' + err);
-          connection.drop();
-          setTimeout(function() {
-            process.exit(100);
-          }, 100);
+            console.error('send() error: ' + err);
+            connection.drop();
+            setTimeout(function () {
+                process.exit(100);
+            }, 100);
         }
     }
-    connection.on('message', function(message) {
+    connection.on('message', function (message) {
         if (message.type === 'utf8') {
-            if (debug) { console.log('Received utf-8 message of ' + message.utf8Data.length + ' characters.'); }
+            if (debug) {
+                console.log('Received utf-8 message of ' + message.utf8Data.length + ' characters.');
+            }
             connection.sendUTF(message.utf8Data, sendCallback);
-        }
-        else if (message.type === 'binary') {
-            if (debug) { console.log('Received Binary Message of ' + message.binaryData.length + ' bytes'); }
+        } else if (message.type === 'binary') {
+            if (debug) {
+                console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');
+            }
             connection.sendBytes(message.binaryData, sendCallback);
         }
     });
-    connection.on('close', function(reasonCode, description) {
-        if (debug) { console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.'); }
+    connection.on('close', function (reasonCode, description) {
+        if (debug) {
+            console.log(new Date() + ' Peer ' + connection.remoteAddress + ' disconnected.');
+        }
         connection._debug.printOutput();
     });
 });

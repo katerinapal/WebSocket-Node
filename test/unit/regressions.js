@@ -1,34 +1,49 @@
-import sharedstartechoserver_startEchoServer from "../shared/start-echo-server";
-import libWebSocketClient_WebSocketClient from "../../lib/WebSocketClient";
-import ext_tape from "tape";
-var test = ext_tape;
+"use strict";
 
-var WebSocketClient = libWebSocketClient_WebSocketClient;
-var startEchoServer = sharedstartechoserver_startEchoServer;
+var _startEchoServer = require("../shared/start-echo-server");
 
-test('Issue 195 - passing number to connection.send() shouldn\'t throw', function(t) {
-  startEchoServer(function(err, echoServer) {
-    if (err) { return t.fail('Unable to start echo server: ' + err); }
-    
+var _startEchoServer2 = _interopRequireDefault(_startEchoServer);
+
+var _WebSocketClient = require("../../lib/WebSocketClient");
+
+var _WebSocketClient2 = _interopRequireDefault(_WebSocketClient);
+
+var _tape = require("tape");
+
+var _tape2 = _interopRequireDefault(_tape);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var test = _tape2.default;
+
+var WebSocketClient = _WebSocketClient2.default;
+var startEchoServer = _startEchoServer2.default;
+
+test('Issue 195 - passing number to connection.send() shouldn\'t throw', function (t) {
+  startEchoServer(function (err, echoServer) {
+    if (err) {
+      return t.fail('Unable to start echo server: ' + err);
+    }
+
     var client = new WebSocketClient();
-    client.on('connect', function(connection) {
+    client.on('connect', function (connection) {
       t.pass('connected');
-      
-      t.doesNotThrow(function() {
+
+      t.doesNotThrow(function () {
         connection.send(12345);
       });
-      
+
       connection.close();
       echoServer.kill();
       t.end();
     });
-    
-    client.on('connectFailed', function(errorDescription) {
+
+    client.on('connectFailed', function (errorDescription) {
       echoServer.kill();
       t.fail(errorDescription);
       t.end();
     });
-    
+
     client.connect('ws://localhost:8080', null);
   });
 });

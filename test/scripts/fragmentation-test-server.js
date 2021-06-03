@@ -1,9 +1,30 @@
 #!/usr/bin/env node
-import ext_fs from "fs";
-import ext_http from "http";
-import * as libutils_utilsjs from "../../lib/utils";
-import libWebSocketRouter_WebSocketRouter from "../../lib/WebSocketRouter";
-import libWebSocketServer_WebSocketServer from "../../lib/WebSocketServer";
+"use strict";
+
+var _fs = require("fs");
+
+var _fs2 = _interopRequireDefault(_fs);
+
+var _http = require("http");
+
+var _http2 = _interopRequireDefault(_http);
+
+var _utils = require("../../lib/utils");
+
+var libutils_utilsjs = _interopRequireWildcard(_utils);
+
+var _WebSocketRouter = require("../../lib/WebSocketRouter");
+
+var _WebSocketRouter2 = _interopRequireDefault(_WebSocketRouter);
+
+var _WebSocketServer = require("../../lib/WebSocketServer");
+
+var _WebSocketServer2 = _interopRequireDefault(_WebSocketServer);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 /************************************************************************
  *  Copyright 2010-2015 Brian McKelvey.
  *  
@@ -20,12 +41,11 @@ import libWebSocketServer_WebSocketServer from "../../lib/WebSocketServer";
  *  limitations under the License.
  ***********************************************************************/
 
-
-var WebSocketServer = libWebSocketServer_WebSocketServer;
-var WebSocketRouter = libWebSocketRouter_WebSocketRouter;
+var WebSocketServer = _WebSocketServer2.default;
+var WebSocketRouter = _WebSocketRouter2.default;
 var bufferAllocUnsafe = libutils_utilsjs.bufferAllocUnsafe;
-var http = ext_http;
-var fs = ext_fs;
+var http = _http2.default;
+var fs = _fs2.default;
 
 console.log('WebSocket-Node: Test server to spit out fragmented messages.');
 
@@ -37,7 +57,7 @@ var args = {
 
 /* Parse command line options */
 var pattern = /^--(.*?)(?:=(.*))?$/;
-process.argv.forEach(function(value) {
+process.argv.forEach(function (value) {
     var match = pattern.exec(value);
     if (match) {
         args[match[1]] = match[2] ? match[2] : true;
@@ -49,37 +69,34 @@ args.protocol = 'ws:';
 if (args.help) {
     console.log('Usage: ./fragmentation-test-server.js [--port=8080] [--fragment=n] [--no-fragmentation]');
     console.log('');
-    
+
     // return;
     process.exit();
-}
-else {
+} else {
     console.log('Use --help for usage information.');
 }
 
-var server = http.createServer(function(request, response) {
-    console.log((new Date()) + ' Received request for ' + request.url);
+var server = http.createServer(function (request, response) {
+    console.log(new Date() + ' Received request for ' + request.url);
     if (request.url === '/') {
-        fs.readFile('fragmentation-test-page.html', 'utf8', function(err, data) {
+        fs.readFile('fragmentation-test-page.html', 'utf8', function (err, data) {
             if (err) {
                 response.writeHead(404);
                 response.end();
-            }
-            else {
+            } else {
                 response.writeHead(200, {
                     'Content-Type': 'text/html'
                 });
                 response.end(data);
             }
         });
-    }
-    else {
+    } else {
         response.writeHead(404);
         response.end();
     }
 });
-server.listen(args.port, function() {
-    console.log((new Date()) + ' Server is listening on port ' + args.port);
+server.listen(args.port, function () {
+    console.log(new Date() + ' Server is listening on port ' + args.port);
 });
 
 var wsServer = new WebSocketServer({
@@ -91,20 +108,19 @@ var wsServer = new WebSocketServer({
 var router = new WebSocketRouter();
 router.attachServer(wsServer);
 
-
 var lorem = 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.';
 
-
-router.mount('*', 'fragmentation-test', function(request) {
+router.mount('*', 'fragmentation-test', function (request) {
     var connection = request.accept(request.origin);
-    console.log((new Date()) + ' connection accepted from ' + connection.remoteAddress);
+    console.log(new Date() + ' connection accepted from ' + connection.remoteAddress);
 
-    
-    connection.on('message', function(message) {
-      function sendCallback(err) {
-        if (err) { console.error('send() error: ' + err); }
-      }
-      if (message.type === 'utf8') {
+    connection.on('message', function (message) {
+        function sendCallback(err) {
+            if (err) {
+                console.error('send() error: ' + err);
+            }
+        }
+        if (message.type === 'utf8') {
             var length = 0;
             var match = /sendMessage\|(\d+)/.exec(message.utf8Data);
             var requestedLength;
@@ -112,40 +128,40 @@ router.mount('*', 'fragmentation-test', function(request) {
                 requestedLength = parseInt(match[1], 10);
                 var longLorem = '';
                 while (length < requestedLength) {
-                    longLorem += ('  ' + lorem);
+                    longLorem += '  ' + lorem;
                     length = Buffer.byteLength(longLorem);
                 }
-                longLorem = longLorem.slice(0,requestedLength);
+                longLorem = longLorem.slice(0, requestedLength);
                 length = Buffer.byteLength(longLorem);
                 if (length > 0) {
                     connection.sendUTF(longLorem, sendCallback);
-                    console.log((new Date()) + ' sent ' + length + ' byte utf-8 message to ' + connection.remoteAddress);
+                    console.log(new Date() + ' sent ' + length + ' byte utf-8 message to ' + connection.remoteAddress);
                 }
                 return;
             }
-            
+
             match = /sendBinaryMessage\|(\d+)/.exec(message.utf8Data);
             if (match) {
                 requestedLength = parseInt(match[1], 10);
-                
+
                 // Generate random binary data.
                 var buffer = bufferAllocUnsafe(requestedLength);
-                for (var i=0; i < requestedLength; i++) {
-                    buffer[i] = Math.ceil(Math.random()*255);
+                for (var i = 0; i < requestedLength; i++) {
+                    buffer[i] = Math.ceil(Math.random() * 255);
                 }
-                
+
                 connection.sendBytes(buffer, sendCallback);
-                console.log((new Date()) + ' sent ' + buffer.length + ' byte binary message to ' + connection.remoteAddress);
+                console.log(new Date() + ' sent ' + buffer.length + ' byte binary message to ' + connection.remoteAddress);
                 return;
             }
         }
     });
 
-    connection.on('close', function(reasonCode, description) {
-        console.log((new Date()) + ' peer ' + connection.remoteAddress + ' disconnected.');
+    connection.on('close', function (reasonCode, description) {
+        console.log(new Date() + ' peer ' + connection.remoteAddress + ' disconnected.');
     });
-    
-    connection.on('error', function(error) {
+
+    connection.on('error', function (error) {
         console.log('Connection error for peer ' + connection.remoteAddress + ': ' + error);
     });
 });
@@ -153,7 +169,6 @@ router.mount('*', 'fragmentation-test', function(request) {
 console.log('Point your WebSocket Protocol Version 8 compliant browser at http://localhost:' + args.port + '/');
 if (args['no-fragmentation']) {
     console.log('Fragmentation disabled.');
-}
-else {
+} else {
     console.log('Fragmenting messages at ' + wsServer.config.fragmentationThreshold + ' bytes');
 }
