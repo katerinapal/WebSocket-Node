@@ -1,5 +1,12 @@
-import libwebsocket_websocketjs from "../../lib/websocket";
-var WebSocketClient = libwebsocket_websocketjs.client;
+'use strict';
+
+var _websocket = require('../../lib/websocket');
+
+var _websocket2 = _interopRequireDefault(_websocket);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var WebSocketClient = _websocket2.default.client;
 
 var connectionAmount = process.argv[2];
 var activeCount = 0;
@@ -14,40 +21,40 @@ function logActiveCount() {
 setInterval(logActiveCount, 500);
 
 function connectDevices() {
-    for( var i=0; i < connectionAmount; i++ ){
-        connect( i );
+    for (var i = 0; i < connectionAmount; i++) {
+        connect(i);
     }
 }
 
-function connect( i ){          
+function connect(i) {
     // console.log( '--- Connecting: ' + i );
     var client = new WebSocketClient({
         tlsOptions: {
             rejectUnauthorized: false
         }
-    }); 
+    });
     client._clientID = i;
     deviceList[i] = client;
 
-    client.on('connectFailed', function(error) {
+    client.on('connectFailed', function (error) {
         console.log(i + ' - connect Error: ' + error.toString());
     });
 
-    client.on('connect', function(connection) {
+    client.on('connect', function (connection) {
         console.log(i + ' - connect');
-        activeCount ++;
+        activeCount++;
         client.connection = connection;
-        flake( i );
-        
+        flake(i);
+
         maybeScheduleSend(i);
 
-        connection.on('error', function(error) {
+        connection.on('error', function (error) {
             console.log(i + ' - ' + error.toString());
         });
 
-        connection.on('close', function(reasonCode, closeDescription) {
+        connection.on('close', function (reasonCode, closeDescription) {
             console.log(i + ' - close (%d) %s', reasonCode, closeDescription);
-            activeCount --;
+            activeCount--;
             if (client._flakeTimeout) {
                 clearTimeout(client._flakeTimeout);
                 client._flakeTimeout = null;
@@ -55,17 +62,16 @@ function connect( i ){
             connect(i);
         });
 
-        connection.on('message', function(message) {
-            if ( message.type === 'utf8' ) {
+        connection.on('message', function (message) {
+            if (message.type === 'utf8') {
                 console.log(i + ' received: \'' + message.utf8Data + '\'');
             }
-        });     
-
+        });
     });
     client.connect('wss://localhost:8080');
 }
 
-function disconnect( i ){
+function disconnect(i) {
     var client = deviceList[i];
     if (client._flakeTimeout) {
         client._flakeTimeout = null;
@@ -78,11 +84,11 @@ function maybeScheduleSend(i) {
     var random = Math.round(Math.random() * 100);
     console.log(i + ' - scheduling send.  Random: ' + random);
     if (random < 50) {
-        setTimeout(function() {
+        setTimeout(function () {
             console.log(i + ' - send timeout.  Connected? ' + client.connection.connected);
             if (client && client.connection.connected) {
                 console.log(i + ' - Sending test data! random: ' + random);
-                client.connection.send( (new Array(random)).join('TestData') );
+                client.connection.send(new Array(random).join('TestData'));
             }
         }, random);
     }
@@ -91,7 +97,7 @@ function maybeScheduleSend(i) {
 function flake(i) {
     var client = deviceList[i];
     var timeBeforeDisconnect = Math.round(Math.random() * 2000);
-    client._flakeTimeout = setTimeout( function() {
+    client._flakeTimeout = setTimeout(function () {
         disconnect(i);
     }, timeBeforeDisconnect);
 }
