@@ -1,5 +1,7 @@
 #!/usr/bin/env node
-import { WebSocketClient as WebSocketClient_WebSocketClient } from "../../lib/WebSocketClient";
+'use strict';
+
+var _WebSocketClient = require('../../lib/WebSocketClient');
 
 console.log('WebSocket-Node: Test client for parsing fragmented messages.');
 
@@ -13,7 +15,7 @@ var args = { /* defaults */
 
 /* Parse command line options */
 var pattern = /^--(.*?)(?:=(.*))?$/;
-process.argv.forEach(function(value) {
+process.argv.forEach(function (value) {
     var match = pattern.exec(value);
     if (match) {
         args[match[1]] = match[2] ? match[2] : true;
@@ -28,55 +30,51 @@ if (args.help) {
 
     // return;
     process.exit();
-}
-else {
+} else {
     console.log('Use --help for usage information.');
 }
 
-
-var client = new WebSocketClient_WebSocketClient({
-    maxReceivedMessageSize: 128*1024*1024, // 128 MiB
-    maxReceivedFrameSize: 1*1024*1024, // 1 MiB
+var client = new _WebSocketClient.WebSocketClient({
+    maxReceivedMessageSize: 128 * 1024 * 1024, // 128 MiB
+    maxReceivedFrameSize: 1 * 1024 * 1024, // 1 MiB
     assembleFragments: !args['no-defragment']
 });
 
-client.on('connectFailed', function(error) {
+client.on('connectFailed', function (error) {
     console.log('Client Error: ' + error.toString());
 });
-
 
 var requestedLength = 100;
 var messageSize = 0;
 var startTime;
 var byteCounter;
 
-client.on('connect', function(connection) {
+client.on('connect', function (connection) {
     console.log('Connected');
     startTime = new Date();
     byteCounter = 0;
 
-    connection.on('error', function(error) {
+    connection.on('error', function (error) {
         console.log('Connection Error: ' + error.toString());
     });
 
-    connection.on('close', function() {
+    connection.on('close', function () {
         console.log('Connection Closed');
-    });  
+    });
 
-    connection.on('message', function(message) {
+    connection.on('message', function (message) {
         if (message.type === 'utf8') {
             console.log('Received utf-8 message of ' + message.utf8Data.length + ' characters.');
             logThroughput(message.utf8Data.length);
             requestData();
-        }
-        else {
+        } else {
             console.log('Received binary message of ' + message.binaryData.length + ' bytes.');
             logThroughput(message.binaryData.length);
             requestData();
         }
     });
-    
-    connection.on('frame', function(frame) {
+
+    connection.on('frame', function (frame) {
         console.log('Frame: 0x' + frame.opcode.toString(16) + '; ' + frame.length + ' bytes; Flags: ' + renderFlags(frame));
         messageSize += frame.length;
         if (frame.fin) {
@@ -86,12 +84,12 @@ client.on('connect', function(connection) {
             requestData();
         }
     });
-    
+
     function logThroughput(numBytes) {
         byteCounter += numBytes;
-        var duration = (new Date()).valueOf() - startTime.valueOf();
+        var duration = new Date().valueOf() - startTime.valueOf();
         if (duration > 1000) {
-            var kiloBytesPerSecond = Math.round((byteCounter / 1024) / (duration/1000));
+            var kiloBytesPerSecond = Math.round(byteCounter / 1024 / (duration / 1000));
             console.log('                                     Throughput: ' + kiloBytesPerSecond + ' KBps');
             startTime = new Date();
             byteCounter = 0;
@@ -99,19 +97,20 @@ client.on('connect', function(connection) {
     }
 
     function sendUTFCallback(err) {
-        if (err) { console.error('sendUTF() error: ' + err); }
+        if (err) {
+            console.error('sendUTF() error: ' + err);
+        }
     }
-    
+
     function requestData() {
         if (args.binary) {
             connection.sendUTF('sendBinaryMessage|' + requestedLength, sendUTFCallback);
-        }
-        else {
+        } else {
             connection.sendUTF('sendMessage|' + requestedLength, sendUTFCallback);
         }
         requestedLength += Math.ceil(Math.random() * 1024);
     }
-    
+
     function renderFlags(frame) {
         var flags = [];
         if (frame.fin) {
@@ -134,14 +133,13 @@ client.on('connect', function(connection) {
         }
         return flags.join(' ');
     }
-    
+
     requestData();
 });
 
 if (args['no-defragment']) {
     console.log('Not automatically re-assembling fragmented messages.');
-}
-else {
+} else {
     console.log('Maximum aggregate message size: ' + client.config.maxReceivedMessageSize + ' bytes.');
 }
 console.log('Connecting');

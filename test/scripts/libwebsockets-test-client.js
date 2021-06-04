@@ -1,5 +1,7 @@
 #!/usr/bin/env node
-import { WebSocketClient as WebSocketClient_WebSocketClient } from "../../lib/WebSocketClient";
+'use strict';
+
+var _WebSocketClient = require('../../lib/WebSocketClient');
 
 var args = { /* defaults */
     secure: false,
@@ -8,7 +10,7 @@ var args = { /* defaults */
 
 /* Parse command line options */
 var pattern = /^--(.*?)(?:=(.*))?$/;
-process.argv.forEach(function(value) {
+process.argv.forEach(function (value) {
     var match = pattern.exec(value);
     if (match) {
         args[match[1]] = match[2] ? match[2] : true;
@@ -27,24 +29,26 @@ if (!args.host || !args.port) {
     process.exit();
 }
 
-var mirrorClient = new WebSocketClient_WebSocketClient({
+var mirrorClient = new _WebSocketClient.WebSocketClient({
     webSocketVersion: args.version
 });
 
-mirrorClient.on('connectFailed', function(error) {
+mirrorClient.on('connectFailed', function (error) {
     console.log('Connect Error: ' + error.toString());
 });
 
-mirrorClient.on('connect', function(connection) {
+mirrorClient.on('connect', function (connection) {
     console.log('lws-mirror-protocol connected');
-    connection.on('error', function(error) {
+    connection.on('error', function (error) {
         console.log('Connection Error: ' + error.toString());
     });
-    connection.on('close', function() {
+    connection.on('close', function () {
         console.log('lws-mirror-protocol Connection Closed');
-    });  
+    });
     function sendCallback(err) {
-        if (err) { console.error('send() error: ' + err); }
+        if (err) {
+            console.error('send() error: ' + err);
+        }
     }
     function spamCircles() {
         if (connection.connected) {
@@ -62,24 +66,23 @@ mirrorClient.on('connect', function(connection) {
 
 mirrorClient.connect(args.protocol + '//' + args.host + ':' + args.port + '/', 'lws-mirror-protocol');
 
-
-var incrementClient = new WebSocketClient_WebSocketClient({
+var incrementClient = new _WebSocketClient.WebSocketClient({
     webSocketVersion: args.version
 });
 
-incrementClient.on('connectFailed', function(error) {
+incrementClient.on('connectFailed', function (error) {
     console.log('Connect Error: ' + error.toString());
 });
 
-incrementClient.on('connect', function(connection) {
+incrementClient.on('connect', function (connection) {
     console.log('dumb-increment-protocol connected');
-    connection.on('error', function(error) {
+    connection.on('error', function (error) {
         console.log('Connection Error: ' + error.toString());
     });
-    connection.on('close', function() {
+    connection.on('close', function () {
         console.log('dumb-increment-protocol Connection Closed');
     });
-    connection.on('message', function(message) {
+    connection.on('message', function (message) {
         console.log('Number: \'' + message.utf8Data + '\'');
     });
 });

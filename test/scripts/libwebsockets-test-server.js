@@ -1,8 +1,19 @@
 #!/usr/bin/env node
-import { WebSocketServer as WebSocketServer_WebSocketServer } from "../../lib/WebSocketServer";
-import { WebSocketRouter as WebSocketRouter_WebSocketRouter } from "../../lib/WebSocketRouter";
-import ext_http_http from "http";
-import ext_fs_fs from "fs";
+"use strict";
+
+var _WebSocketServer = require("../../lib/WebSocketServer");
+
+var _WebSocketRouter = require("../../lib/WebSocketRouter");
+
+var _http = require("http");
+
+var _http2 = _interopRequireDefault(_http);
+
+var _fs = require("fs");
+
+var _fs2 = _interopRequireDefault(_fs);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var args = { /* defaults */
     secure: false
@@ -10,7 +21,7 @@ var args = { /* defaults */
 
 /* Parse command line options */
 var pattern = /^--(.*?)(?:=(.*))?$/;
-process.argv.forEach(function(value) {
+process.argv.forEach(function (value) {
     var match = pattern.exec(value);
     if (match) {
         args[match[1]] = match[2] ? match[2] : true;
@@ -39,84 +50,77 @@ if (args.secure) {
     process.exit();
 }
 
-var server = ext_http_http.createServer(function(request, response) {
-    console.log((new Date()) + ' Received request for ' + request.url);
+var server = _http2.default.createServer(function (request, response) {
+    console.log(new Date() + ' Received request for ' + request.url);
     if (request.url === '/') {
-        ext_fs_fs.readFile('libwebsockets-test.html', 'utf8', function(err, data) {
+        _fs2.default.readFile('libwebsockets-test.html', 'utf8', function (err, data) {
             if (err) {
                 response.writeHead(404);
                 response.end();
-            }
-            else {
+            } else {
                 response.writeHead(200, {
                     'Content-Type': 'text/html'
                 });
                 response.end(data);
             }
         });
-    }
-    else {
+    } else {
         response.writeHead(404);
         response.end();
     }
 });
-server.listen(args.port, function() {
-    console.log((new Date()) + ' Server is listening on port ' + args.port);
+server.listen(args.port, function () {
+    console.log(new Date() + ' Server is listening on port ' + args.port);
 });
 
-var wsServer = new WebSocketServer_WebSocketServer({
+var wsServer = new _WebSocketServer.WebSocketServer({
     httpServer: server
 });
 
-var router = new WebSocketRouter_WebSocketRouter();
+var router = new _WebSocketRouter.WebSocketRouter();
 router.attachServer(wsServer);
-
 
 var mirrorConnections = [];
 
 var mirrorHistory = [];
 
 function sendCallback(err) {
-    if (err) { console.error('send() error: ' + err); }
+    if (err) {
+        console.error('send() error: ' + err);
+    }
 }
 
-router.mount('*', 'lws-mirror-protocol', function(request) {
-    var cookies = [
-        {
-            name: 'TestCookie',
-            value: 'CookieValue' + Math.floor(Math.random()*1000),
-            path: '/',
-            secure: false,
-            maxage: 5000,
-            httponly: true
-        }
-    ];
-    
+router.mount('*', 'lws-mirror-protocol', function (request) {
+    var cookies = [{
+        name: 'TestCookie',
+        value: 'CookieValue' + Math.floor(Math.random() * 1000),
+        path: '/',
+        secure: false,
+        maxage: 5000,
+        httponly: true
+    }];
+
     // Should do origin verification here. You have to pass the accepted
     // origin into the accept method of the request.
     var connection = request.accept(request.origin, cookies);
-    console.log((new Date()) + ' lws-mirror-protocol connection accepted from ' + connection.remoteAddress +
-                ' - Protocol Version ' + connection.webSocketVersion);
+    console.log(new Date() + ' lws-mirror-protocol connection accepted from ' + connection.remoteAddress + ' - Protocol Version ' + connection.webSocketVersion);
 
-
-    
     if (mirrorHistory.length > 0) {
         var historyString = mirrorHistory.join('');
-        console.log((new Date()) + ' sending mirror protocol history to client; ' + connection.remoteAddress + ' : ' + Buffer.byteLength(historyString) + ' bytes');
-        
+        console.log(new Date() + ' sending mirror protocol history to client; ' + connection.remoteAddress + ' : ' + Buffer.byteLength(historyString) + ' bytes');
+
         connection.send(historyString, sendCallback);
     }
-    
+
     mirrorConnections.push(connection);
-    
-    connection.on('message', function(message) {
+
+    connection.on('message', function (message) {
         // We only care about text messages
         if (message.type === 'utf8') {
             // Clear canvas command received
             if (message.utf8Data === 'clear;') {
                 mirrorHistory = [];
-            }
-            else {
+            } else {
                 // Record all other commands in the history
                 mirrorHistory.push(message.utf8Data);
             }
@@ -128,43 +132,42 @@ router.mount('*', 'lws-mirror-protocol', function(request) {
         }
     });
 
-    connection.on('close', function(closeReason, description) {
+    connection.on('close', function (closeReason, description) {
         var index = mirrorConnections.indexOf(connection);
         if (index !== -1) {
-            console.log((new Date()) + ' lws-mirror-protocol peer ' + connection.remoteAddress + ' disconnected, code: ' + closeReason + '.');
+            console.log(new Date() + ' lws-mirror-protocol peer ' + connection.remoteAddress + ' disconnected, code: ' + closeReason + '.');
             mirrorConnections.splice(index, 1);
         }
     });
-    
-    connection.on('error', function(error) {
+
+    connection.on('error', function (error) {
         console.log('Connection error for peer ' + connection.remoteAddress + ': ' + error);
     });
 });
 
-router.mount('*', 'dumb-increment-protocol', function(request) {
+router.mount('*', 'dumb-increment-protocol', function (request) {
     // Should do origin verification here. You have to pass the accepted
     // origin into the accept method of the request.
     var connection = request.accept(request.origin);
-    console.log((new Date()) + ' dumb-increment-protocol connection accepted from ' + connection.remoteAddress +
-                ' - Protocol Version ' + connection.webSocketVersion);
+    console.log(new Date() + ' dumb-increment-protocol connection accepted from ' + connection.remoteAddress + ' - Protocol Version ' + connection.webSocketVersion);
 
     var number = 0;
-    connection.timerInterval = setInterval(function() {
+    connection.timerInterval = setInterval(function () {
         connection.send((number++).toString(10), sendCallback);
     }, 50);
-    connection.on('close', function() {
+    connection.on('close', function () {
         clearInterval(connection.timerInterval);
     });
-    connection.on('message', function(message) {
+    connection.on('message', function (message) {
         if (message.type === 'utf8') {
             if (message.utf8Data === 'reset\n') {
-                console.log((new Date()) + ' increment reset received');
+                console.log(new Date() + ' increment reset received');
                 number = 0;
             }
         }
     });
-    connection.on('close', function(closeReason, description) {
-        console.log((new Date()) + ' dumb-increment-protocol peer ' + connection.remoteAddress + ' disconnected, code: ' + closeReason + '.');
+    connection.on('close', function (closeReason, description) {
+        console.log(new Date() + ' dumb-increment-protocol peer ' + connection.remoteAddress + ' disconnected, code: ' + closeReason + '.');
     });
 });
 
