@@ -1,13 +1,12 @@
-var test = require('tape');
+import ext_test from "tape";
+import { WebSocketClient as WebSocketClient_WebSocketClient } from "../../lib/WebSocketClient";
+import { startEchoServer as startechoserver_startEchoServer } from "../shared/start-echo-server";
 
-var WebSocketClient = require('../../lib/WebSocketClient');
-var startEchoServer = require('../shared/start-echo-server');
-
-test('Issue 195 - passing number to connection.send() shouldn\'t throw', function(t) {
-  startEchoServer(function(err, echoServer) {
+ext_test('Issue 195 - passing number to connection.send() shouldn\'t throw', function(t) {
+  startechoserver_startEchoServer(function(err, echoServer) {
     if (err) { return t.fail('Unable to start echo server: ' + err); }
     
-    var client = new WebSocketClient();
+    var client = new WebSocketClient_WebSocketClient();
     client.on('connect', function(connection) {
       t.pass('connected');
       

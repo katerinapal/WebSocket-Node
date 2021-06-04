@@ -1,22 +1,6 @@
 #!/usr/bin/env node
-/************************************************************************
- *  Copyright 2010-2015 Brian McKelvey.
- *
- *  Licensed under the Apache License, Version 2.0 (the 'License');
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an 'AS IS' BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- ***********************************************************************/
-
-var WebSocketServer = require('../../lib/WebSocketServer');
-var http = require('http');
+import { WebSocketServer as WebSocketServer_WebSocketServer } from "../../lib/WebSocketServer";
+import ext_http_http from "http";
 
 var args = { /* defaults */
     port: '8080',
@@ -38,7 +22,7 @@ var debug = args.debug;
 console.log('WebSocket-Node: echo-server');
 console.log('Usage: ./echo-server.js [--port=8080] [--debug]');
 
-var server = http.createServer(function(request, response) {
+var server = ext_http_http.createServer(function(request, response) {
     if (debug) { console.log((new Date()) + ' Received request for ' + request.url); }
     response.writeHead(404);
     response.end();
@@ -47,7 +31,7 @@ server.listen(port, function() {
     console.log((new Date()) + ' Server is listening on port ' + port);
 });
 
-var wsServer = new WebSocketServer({
+var wsServer = new WebSocketServer_WebSocketServer({
     httpServer: server,
     autoAcceptConnections: true,
     maxReceivedFrameSize: 64*1024*1024,   // 64MiB

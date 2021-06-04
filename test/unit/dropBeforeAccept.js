@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 
-var test = require('tape');
-
-var WebSocketClient = require('../../lib/WebSocketClient');
-var server = require('../shared/test-server');
+import ext_test from "tape";
+import { WebSocketClient as WebSocketClient_WebSocketClient } from "../../lib/WebSocketClient";
+import { testserverjs as server } from "../shared/test-server";
 var stopServer = server.stopServer;
 
-test('Drop TCP Connection Before server accepts the request', function(t) {
+ext_test('Drop TCP Connection Before server accepts the request', function(t) {
   t.plan(5);
   
   server.prepare(function(err, wsServer) {
@@ -44,7 +43,7 @@ test('Drop TCP Connection Before server accepts the request', function(t) {
       }, 500);
     });
     
-    var client = new WebSocketClient();
+    var client = new WebSocketClient_WebSocketClient();
     client.on('connect', function(connection) {
       t.fail('Client should never connect.');
       connection.drop();
