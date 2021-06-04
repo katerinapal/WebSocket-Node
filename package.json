@@ -1,58 +1,73 @@
 {
-  "name": "websocket",
-  "description": "Websocket Client & Server Library implementing the WebSocket protocol as specified in RFC 6455.",
-  "keywords": [
-    "websocket",
-    "websockets",
-    "socket",
-    "networking",
-    "comet",
-    "push",
-    "RFC-6455",
-    "realtime",
-    "server",
-    "client"
-  ],
-  "author": "Brian McKelvey <theturtle32@gmail.com> (https://github.com/theturtle32)",
-  "contributors": [
-    "Iñaki Baz Castillo <ibc@aliax.net> (http://dev.sipdoc.net)"
-  ],
-  "version": "1.0.34",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/theturtle32/WebSocket-Node.git"
-  },
-  "homepage": "https://github.com/theturtle32/WebSocket-Node",
-  "engines": {
-    "node": ">=4.0.0"
-  },
-  "dependencies": {
-    "bufferutil": "^4.0.1",
-    "debug": "^2.2.0",
-    "es5-ext": "^0.10.50",
-    "typedarray-to-buffer": "^3.1.5",
-    "utf-8-validate": "^5.0.2",
-    "yaeti": "^0.0.6"
-  },
-  "devDependencies": {
-    "buffer-equal": "^1.0.0",
-    "gulp": "^4.0.2",
-    "gulp-jshint": "^2.0.4",
-    "jshint-stylish": "^2.2.1",
-    "jshint": "^2.0.0",
-    "tape": "^4.9.1"
-  },
-  "config": {
-    "verbose": false
-  },
-  "scripts": {
-    "test": "tape test/unit/*.js",
-    "gulp": "gulp"
-  },
-  "main": "index",
-  "directories": {
-    "lib": "./lib"
-  },
-  "browser": "lib/browser.js",
-  "license": "Apache-2.0"
+    "name": "websocket",
+    "description": "Websocket Client & Server Library implementing the WebSocket protocol as specified in RFC 6455.",
+    "keywords": [
+        "websocket",
+        "websockets",
+        "socket",
+        "networking",
+        "comet",
+        "push",
+        "RFC-6455",
+        "realtime",
+        "server",
+        "client"
+    ],
+    "author": "Brian McKelvey <theturtle32@gmail.com> (https://github.com/theturtle32)",
+    "contributors": [
+        "Iñaki Baz Castillo <ibc@aliax.net> (http://dev.sipdoc.net)"
+    ],
+    "version": "1.0.34",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/theturtle32/WebSocket-Node.git"
+    },
+    "homepage": "https://github.com/theturtle32/WebSocket-Node",
+    "engines": {
+        "node": ">=4.0.0"
+    },
+    "dependencies": {
+        "bufferutil": "^4.0.1",
+        "debug": "^2.2.0",
+        "es5-ext": "^0.10.50",
+        "typedarray-to-buffer": "^3.1.5",
+        "utf-8-validate": "^5.0.2",
+        "yaeti": "^0.0.6"
+    },
+    "devDependencies": {
+        "buffer-equal": "^1.0.0",
+        "gulp": "^4.0.2",
+        "gulp-jshint": "^2.0.4",
+        "jshint-stylish": "^2.2.1",
+        "jshint": "^2.0.0",
+        "tape": "^4.9.1",
+        "babel-cli": "latest",
+        "babel-core": "latest",
+        "babel-plugin-add-module-exports": "latest",
+        "babel-plugin-transform-es2015-modules-commonjs": "latest",
+        "babel-polyfill": "latest",
+        "babel-plugin-transform-object-rest-spread": "latest",
+        "babel-preset-env": "latest"
+    },
+    "config": {
+        "verbose": false
+    },
+    "scripts": {
+        "test": "tape test/unit/*.js",
+        "gulp": "gulp",
+        "compile-lib": "babel lib --out-dir lib --require babel-polyfill --presets env",
+        "compile-testscripts": "babel test\\scripts --out-dir test\\scripts --require babel-polyfill --presets env",
+        "compile-testunit": "babel test\\unit --out-dir test\\unit --require babel-polyfill --presets env",
+        "compile-testshared": "babel test\\shared --out-dir test\\shared --require babel-polyfill --presets env",
+        "compile-vendor": "babel vendor --out-dir vendor --require babel-polyfill --presets env",
+        "compile-indexjs": "babel index.js -o index.js --require babel-polyfill --presets env",
+        "compile-1_script": "npm run compile-lib && npm run compile-testscripts && npm run compile-testunit && npm run compile-testshared && npm run compile-vendor && npm run compile-indexjs",
+        "compile": "npm run compile-1_script"
+    },
+    "main": "index",
+    "directories": {
+        "lib": "./lib"
+    },
+    "browser": "lib/browser.js",
+    "license": "Apache-2.0"
 }

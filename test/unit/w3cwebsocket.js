@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
-var test = require('tape');
-var WebSocket = require('../../lib/W3CWebSocket');
-var startEchoServer = require('../shared/start-echo-server');
+import ext_test from "tape";
+import { W3CWebSocket as WebSocket } from "../../lib/W3CWebSocket";
+import { startEchoServer as startechoserver_startEchoServer } from "../shared/start-echo-server";
 
-test('W3CWebSockets adding event listeners with ws.onxxxxx', function(t) {
+ext_test('W3CWebSockets adding event listeners with ws.onxxxxx', function(t) {
   var counter = 0;
   var message = 'This is a test message.';
 
-  startEchoServer(function(err, echoServer) {
+  startechoserver_startEchoServer(function(err, echoServer) {
     if (err) { return t.fail('Unable to start echo server: ' + err); }
 
     var ws = new WebSocket('ws://localhost:8080/');
@@ -38,11 +38,11 @@ test('W3CWebSockets adding event listeners with ws.onxxxxx', function(t) {
   });
 });
 
-test('W3CWebSockets adding event listeners with ws.addEventListener', function(t) {
+ext_test('W3CWebSockets adding event listeners with ws.addEventListener', function(t) {
   var counter = 0;
   var message = 'This is a test message.';
 
-  startEchoServer(function(err, echoServer) {
+  startechoserver_startEchoServer(function(err, echoServer) {
     if (err) { return t.fail('Unable to start echo server: ' + err); }
 
     var ws = new WebSocket('ws://localhost:8080/');
