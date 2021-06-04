@@ -1,26 +1,9 @@
 #!/usr/bin/env node
-/************************************************************************
- *  Copyright 2010-2015 Brian McKelvey.
- *  
- *  Licensed under the Apache License, Version 2.0 (the 'License');
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *  
- *      http://www.apache.org/licenses/LICENSE-2.0
- *  
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an 'AS IS' BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- ***********************************************************************/
-
-
-var WebSocketServer = require('../../lib/WebSocketServer');
-var WebSocketRouter = require('../../lib/WebSocketRouter');
-var bufferAllocUnsafe = require('../../lib/utils').bufferAllocUnsafe;
-var http = require('http');
-var fs = require('fs');
+import { WebSocketServer as WebSocketServer_WebSocketServer } from "../../lib/WebSocketServer";
+import { WebSocketRouter as WebSocketRouter_WebSocketRouter } from "../../lib/WebSocketRouter";
+import { bufferAllocUnsafe } from "../../lib/utils";
+import ext_http_http from "http";
+import ext_fs_fs from "fs";
 
 console.log('WebSocket-Node: Test server to spit out fragmented messages.');
 
@@ -52,10 +35,10 @@ else {
     console.log('Use --help for usage information.');
 }
 
-var server = http.createServer(function(request, response) {
+var server = ext_http_http.createServer(function(request, response) {
     console.log((new Date()) + ' Received request for ' + request.url);
     if (request.url === '/') {
-        fs.readFile('fragmentation-test-page.html', 'utf8', function(err, data) {
+        ext_fs_fs.readFile('fragmentation-test-page.html', 'utf8', function(err, data) {
             if (err) {
                 response.writeHead(404);
                 response.end();
@@ -77,13 +60,13 @@ server.listen(args.port, function() {
     console.log((new Date()) + ' Server is listening on port ' + args.port);
 });
 
-var wsServer = new WebSocketServer({
+var wsServer = new WebSocketServer_WebSocketServer({
     httpServer: server,
     fragmentOutgoingMessages: !args['no-fragmentation'],
     fragmentationThreshold: parseInt(args['fragment'], 10)
 });
 
-var router = new WebSocketRouter();
+var router = new WebSocketRouter_WebSocketRouter();
 router.attachServer(wsServer);
 
 
