@@ -1,4 +1,5 @@
-var WebSocketClient = require('../../lib/websocket').client;
+import { websocketjs as libwebsocket_websocketjs } from "../../lib/websocket";
+var WebSocketClient = libwebsocket_websocketjs.client;
 
 var connectionAmount = process.argv[2];
 var activeCount = 0;

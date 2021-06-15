@@ -1,23 +1,8 @@
 #!/usr/bin/env node
-/************************************************************************
- *  Copyright 2010-2015 Brian McKelvey.
- *  
- *  Licensed under the Apache License, Version 2.0 (the 'License');
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *  
- *      http://www.apache.org/licenses/LICENSE-2.0
- *  
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an 'AS IS' BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- ***********************************************************************/
-
-var WebSocketClient = require('../../lib/WebSocketClient');
-var wsVersion = require('../../lib/websocket').version;
-var querystring = require('querystring');
+import { WebSocketClient as WebSocketClient_WebSocketClient } from "../../lib/WebSocketClient";
+import { websocketjs as libwebsocket_websocketjs } from "../../lib/websocket";
+import ext_querystring_querystring from "querystring";
+var wsVersion = libwebsocket_websocketjs.version;
 
 var args = { /* defaults */
     secure: false,
@@ -67,7 +52,7 @@ getCaseCount(function(caseCount) {
 
 function runTestCase(caseIndex, caseCount, callback) {
     console.log('Running test ' + caseIndex + ' of ' + caseCount);
-    var echoClient = new WebSocketClient({
+    var echoClient = new WebSocketClient_WebSocketClient({
         maxReceivedFrameSize: 64*1024*1024,   // 64MiB
         maxReceivedMessageSize: 64*1024*1024, // 64MiB
         fragmentOutgoingMessages: false,
@@ -96,7 +81,7 @@ function runTestCase(caseIndex, caseCount, callback) {
         });
     });
     
-    var qs = querystring.stringify({
+    var qs = ext_querystring_querystring.stringify({
         case: caseIndex,
         agent: 'WebSocket-Node Client v' + wsVersion
     });
@@ -104,7 +89,7 @@ function runTestCase(caseIndex, caseCount, callback) {
 }
 
 function getCaseCount(callback) {
-    var client = new WebSocketClient();
+    var client = new WebSocketClient_WebSocketClient();
     var caseCount = NaN;
     client.on('connect', function(connection) {
         connection.on('close', function() {
@@ -124,8 +109,8 @@ function getCaseCount(callback) {
 }
 
 function updateReport(callback) {
-    var client = new WebSocketClient();
-    var qs = querystring.stringify({
+    var client = new WebSocketClient_WebSocketClient();
+    var qs = ext_querystring_querystring.stringify({
         agent: 'WebSocket-Node Client v' + wsVersion
     });
     client.on('connect', function(connection) {

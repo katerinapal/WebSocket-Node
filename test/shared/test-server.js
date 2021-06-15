@@ -1,17 +1,17 @@
-var http = require('http');
-var WebSocketServer = require('../../lib/WebSocketServer');
+import ext_http_http from "http";
+import { WebSocketServer as WebSocketServer_WebSocketServer } from "../../lib/WebSocketServer";
 
 var server;
 var wsServer;
 
 function prepare(callback) {
   if (typeof(callback) !== 'function') { callback = function(){}; }
-  server = http.createServer(function(request, response) {
+  server = ext_http_http.createServer(function(request, response) {
     response.writeHead(404);
     response.end();
   });
 
-  wsServer = new WebSocketServer({
+  wsServer = new WebSocketServer_WebSocketServer({
     httpServer: server,
     autoAcceptConnections: false,
     maxReceivedFrameSize: 64*1024*1024,   // 64MiB
@@ -39,7 +39,9 @@ function stopServer() {
   }
 }
 
-module.exports = {
+mod_testserverjs = {
   prepare: prepare,
   stopServer: stopServer
 };
+var mod_testserverjs;
+export { mod_testserverjs as testserverjs };

@@ -1,15 +1,19 @@
+var mod_BufferList = BufferList;
+import ext_buffer from "buffer";
+import ext_events from "events";
+import { bufferAllocUnsafe as utils_bufferAllocUnsafe } from "../lib/utils";
+import ext_util from "util";
 // This file was copied from https://github.com/substack/node-bufferlist
 // and modified to be able to copy bytes from the bufferlist directly into
 // a pre-existing fixed-size buffer without an additional memory allocation.
 
 // bufferlist.js
 // Treat a linked list of buffers as a single variable-size buffer.
-var Buffer = require('buffer').Buffer;
-var EventEmitter = require('events').EventEmitter;
-var bufferAllocUnsafe = require('../lib/utils').bufferAllocUnsafe;
+var Buffer = ext_buffer.Buffer;
+var EventEmitter = ext_events.EventEmitter;
+var bufferAllocUnsafe = utils_bufferAllocUnsafe;
 
-module.exports = BufferList;
-module.exports.BufferList = BufferList; // backwards compatibility
+mod_BufferList.BufferList = BufferList; // backwards compatibility
 
 function BufferList(opts) {
     if (!(this instanceof BufferList)) return new BufferList(opts);
@@ -66,7 +70,7 @@ function BufferList(opts) {
     // If fn's result is a true value, cut out early.
     // Returns this (self).
     self.forEach = function (fn) {
-        if (!head.buffer) return bufferAllocUnsafe(0);
+        if (!head.buffer) return utils_bufferAllocUnsafe(0);
         
         if (head.buffer.length - offset <= 0) return self;
         var firstBuf = head.buffer.slice(offset);
@@ -85,11 +89,11 @@ function BufferList(opts) {
     // Create a single Buffer out of all the chunks or some subset specified by
     // start and one-past the end (like slice) in bytes.
     self.join = function (start, end) {
-        if (!head.buffer) return bufferAllocUnsafe(0);
+        if (!head.buffer) return utils_bufferAllocUnsafe(0);
         if (start == undefined) start = 0;
         if (end == undefined) end = self.length;
         
-        var big = bufferAllocUnsafe(end - start);
+        var big = utils_bufferAllocUnsafe(end - start);
         var ix = 0;
         self.forEach(function (buffer) {
             if (start < (ix + buffer.length) && ix < end) {
@@ -109,7 +113,7 @@ function BufferList(opts) {
     };
     
     self.joinInto = function (targetBuffer, targetStart, sourceStart, sourceEnd) {
-        if (!head.buffer) return new bufferAllocUnsafe(0);
+        if (!head.buffer) return new utils_bufferAllocUnsafe(0);
         if (sourceStart == undefined) sourceStart = 0;
         if (sourceEnd == undefined) sourceEnd = self.length;
         
@@ -188,4 +192,5 @@ function BufferList(opts) {
         return self.take('binary');
     };
 }
-require('util').inherits(BufferList, EventEmitter);
+ext_util.inherits(BufferList, EventEmitter);
+export { mod_BufferList as BufferList };

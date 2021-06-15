@@ -1,19 +1,18 @@
+import ext_fs_fs from "fs";
+import { websocketjs as libwebsocket_websocketjs } from "../../lib/websocket";
+import ext_https_https from "https";
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-// var heapdump = require('heapdump');
-// var memwatch = require('memwatch');
-var fs = require('fs');
-var WebSocketServer = require('../../lib/websocket').server;
-var https = require('https');
+var WebSocketServer = libwebsocket_websocketjs.server;
 
 var activeCount = 0;
 
 var config = { 
-    key: fs.readFileSync( 'privatekey.pem' ), 
-    cert: fs.readFileSync( 'certificate.pem' )  
+    key: ext_fs_fs.readFileSync( 'privatekey.pem' ), 
+    cert: ext_fs_fs.readFileSync( 'certificate.pem' )  
 };
 
-var server = https.createServer( config );
+var server = ext_https_https.createServer( config );
 
 server.listen(8080, function() {
     console.log((new Date()) + ' Server is listening on port 8080 (wss)');

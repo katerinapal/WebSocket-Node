@@ -1,10 +1,9 @@
-var test = require('tape');
-
-var WebSocketClient = require('../../lib/WebSocketClient');
-var server = require('../shared/test-server');
+import ext_test from "tape";
+import { WebSocketClient as WebSocketClient_WebSocketClient } from "../../lib/WebSocketClient";
+import { testserverjs as server } from "../shared/test-server";
 var stopServer = server.stopServer;
 
-test('Request can only be rejected or accepted once.', function(t) {
+ext_test('Request can only be rejected or accepted once.', function(t) {
   t.plan(6);
   
   t.on('end', function() {
@@ -45,7 +44,7 @@ test('Request can only be rejected or accepted once.', function(t) {
     function connect(numTimes) {
       var client;
       for (var i=0; i < numTimes; i++) {
-        client = new WebSocketClient();
+        client = new WebSocketClient_WebSocketClient();
         client.connect('ws://localhost:64321/', 'foo');
         client.on('connect', function(connection) { connection.close(); });
       }
@@ -54,7 +53,7 @@ test('Request can only be rejected or accepted once.', function(t) {
 });
 
 
-test('Protocol mismatch should be handled gracefully', function(t) {
+ext_test('Protocol mismatch should be handled gracefully', function(t) {
   var wsServer;
   
   t.test('setup', function(t) {
@@ -73,7 +72,7 @@ test('Protocol mismatch should be handled gracefully', function(t) {
     t.plan(2);
     wsServer.on('request', handleRequest);
     
-    var client = new WebSocketClient();
+    var client = new WebSocketClient_WebSocketClient();
     
     var timer = setTimeout(function() {
       t.fail('Timeout waiting for client event');
