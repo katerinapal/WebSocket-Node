@@ -1,4 +1,12 @@
-import { websocketjs } from "./lib/websocket";
-mod_indexjs = websocketjs;
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.indexjs = undefined;
+
+var _websocket = require("./lib/websocket");
+
+exports.indexjs = mod_indexjs = _websocket.websocketjs;
 var mod_indexjs;
-export { mod_indexjs as indexjs };
+exports.indexjs = mod_indexjs;

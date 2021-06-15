@@ -1,50 +1,60 @@
-import ext_fs_fs from "fs";
-import { websocketjs as libwebsocket_websocketjs } from "../../lib/websocket";
-import ext_https_https from "https";
+"use strict";
+
+var _fs = require("fs");
+
+var _fs2 = _interopRequireDefault(_fs);
+
+var _websocket = require("../../lib/websocket");
+
+var _https = require("https");
+
+var _https2 = _interopRequireDefault(_https);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-var WebSocketServer = libwebsocket_websocketjs.server;
+var WebSocketServer = _websocket.websocketjs.server;
 
 var activeCount = 0;
 
-var config = { 
-    key: ext_fs_fs.readFileSync( 'privatekey.pem' ), 
-    cert: ext_fs_fs.readFileSync( 'certificate.pem' )  
+var config = {
+    key: _fs2.default.readFileSync('privatekey.pem'),
+    cert: _fs2.default.readFileSync('certificate.pem')
 };
 
-var server = ext_https_https.createServer( config );
+var server = _https2.default.createServer(config);
 
-server.listen(8080, function() {
-    console.log((new Date()) + ' Server is listening on port 8080 (wss)');
+server.listen(8080, function () {
+    console.log(new Date() + ' Server is listening on port 8080 (wss)');
 });
 
 var wsServer = new WebSocketServer({
     httpServer: server,
-    autoAcceptConnections: false    
+    autoAcceptConnections: false
 });
 
-wsServer.on('request', function(request) {
+wsServer.on('request', function (request) {
     activeCount++;
     console.log('Opened from: %j\n---activeCount---: %d', request.remoteAddresses, activeCount);
     var connection = request.accept(null, request.origin);
-    console.log((new Date()) + ' Connection accepted.');
-    connection.on('message', function(message) {
+    console.log(new Date() + ' Connection accepted.');
+    connection.on('message', function (message) {
         if (message.type === 'utf8') {
             console.log('Received Message: ' + message.utf8Data);
-            setTimeout(function() {
-              if (connection.connected) {
-                connection.sendUTF(message.utf8Data);
-              }
+            setTimeout(function () {
+                if (connection.connected) {
+                    connection.sendUTF(message.utf8Data);
+                }
             }, 1000);
-        }       
+        }
     });
-    connection.on('close', function(reasonCode, description) {
+    connection.on('close', function (reasonCode, description) {
         activeCount--;
-        console.log('Closed. (' + reasonCode + ') ' + description +
-                    '\n---activeCount---: ' + activeCount);
+        console.log('Closed. (' + reasonCode + ') ' + description + '\n---activeCount---: ' + activeCount);
         // connection._debug.printOutput();
     });
-    connection.on('error', function(error) {
+    connection.on('error', function (error) {
         console.log('Connection error: ' + error);
     });
 });
